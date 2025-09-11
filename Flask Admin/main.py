@@ -36,7 +36,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(50), nullable=False, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
-    items = db.relationship('Item', backref='owner', lazy=True)
+    # items = db.relationship('Item', backref='owner', lazy=True)
 
     def __repr__(self):
         return f"Username: {self.name}"
@@ -51,7 +51,12 @@ class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    stock = db.Column(db.Integer, nullable=False, default=50)
+    description = db.Column(db.String(200), nullable=True)
+    # owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f"{self.name}, price={self.price}, stock={self.stock}, description={self.description}"
 
 # -------------------------------------------------
 # 4. Secure Flask-Admin Views
@@ -69,6 +74,7 @@ class SecureModelView(ModelView):
 # -------------------------------------------------
 admin = Admin(app, name='My Dashboard', template_mode='bootstrap4')
 admin.add_view(SecureModelView(User, db.session))
+admin.add_view(SecureModelView(Item, db.session))
 
 # -------------------------------------------------
 # 6. Routes
