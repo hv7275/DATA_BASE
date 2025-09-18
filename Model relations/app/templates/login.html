@@ -1,0 +1,19 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, msg in messages %}
+    <div class="flash {{ category }}">{{ msg }}</div>
+  {% endfor %}
+{% endwith %}
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.identity.label }} {{ form.identity(size=20) }}<br>
+    {{ form.password.label }} {{ form.password(size=20) }}<br>
+    {{ form.remember_me() }} {{ form.remember_me.label }}<br>
+    {{ form.submit() }}
+</form>
+
+{% for field, errors in form.errors.items() %}
+  {% for error in errors %}
+    <div style="color:red;">{{ field }}: {{ error }}</div>
+  {% endfor %}
+{% endfor %}

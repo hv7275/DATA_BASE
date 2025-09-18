@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, url_for, flash, redirect, current_app
+from flask import Blueprint, render_template, url_for, flash, redirect, current_app, request
 from ..models import User
 from ..extensions import db
-from ..forms import RegistrationForm
-from flask_login import login_user
+from ..forms import RegistrationForm, LoginForm
+from flask_login import login_user, current_user, logout_user
+from sqlalchemy import or_
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -55,3 +56,44 @@ def register():
   
   return render_template('register.html', form=form)
   
+  
+# Login logic
+@auth_bp.route("/login", methods=["GET", "POST"])
+def login():
+    # If already logged in, send to home
+    if current_user.is_authenticated:
+        return redirect(url_for("main.home"))
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        identity = form.identity.data.strip()
+
+        # Allow login by username, email, or phone
+        user = User.query.filter(
+            or_(
+                User.username == identity,
+                User.email == identity,
+                User.phone == identity
+            )
+        ).first()
+
+        # --- password check (note method name in your model) ---
+        if user and user.check_password_hash(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+
+            # Redirect to the originally requested page, if present
+            next_page = request.args.get("next")
+            flash(f"Login Successful! Welcome, {user.username}!", "success")
+            return redirect(next_page or url_for("main.home"))
+
+        flash("Login unsuccessful. Please check your credentials.", "danger")
+
+    return render_template("login.html", form=form)
+
+
+@auth_bp.route("/logout")
+def logout():
+    logout_user()
+    flash("You have been successfully logged out.", "info")
+    return redirect(url_for("auth.login"))
