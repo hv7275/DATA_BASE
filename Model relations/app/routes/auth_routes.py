@@ -83,9 +83,8 @@ def login():
             login_user(user, remember=form.remember_me.data)
 
             # Redirect to the originally requested page, if present
-            next_page = request.args.get("next")
             flash(f"Login Successful! Welcome, {user.username}!", "success")
-            return redirect(next_page or url_for("main.home"))
+            return redirect(url_for("main.home"))
 
         flash("Login unsuccessful. Please check your credentials.", "danger")
 
