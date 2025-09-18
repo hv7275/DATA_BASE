@@ -11,12 +11,12 @@
         .field-error   { color: #d9534f; font-size: 0.9rem; }
         label { display: inline-block; width: 140px; }
         input { margin-bottom: 0.5rem; }
+        .account-link { margin-top: 1rem; font-size: 0.95rem; }
     </style>
 </head>
 <body>
     <h1>Register</h1>
 
-    {# ---------- Flash messages ---------- #}
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
@@ -25,8 +25,7 @@
       {% endif %}
     {% endwith %}
 
-    {# ---------- Registration Form ---------- #}
-    <form method="POST">
+    <form method="POST" action="{{ url_for('auth.register') }}">
         {{ form.hidden_tag() }}
 
         <p>
@@ -79,9 +78,11 @@
         </p>
 
         <p>{{ form.submit() }}</p>
-        <p>
-            If you have an account <a href="{{url_for('auth.login')}}">login</a>
+
+        <p class="account-link">
+            Already have an account? <a href="{{ url_for('auth.login') }}">Log in here</a>.
         </p>
     </form>
 </body>
 </html>
+

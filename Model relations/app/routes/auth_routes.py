@@ -60,7 +60,6 @@ def register():
 # Login logic
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    # If already logged in, send to home
     if current_user.is_authenticated:
         return redirect(url_for("main.home"))
 
@@ -68,8 +67,6 @@ def login():
 
     if form.validate_on_submit():
         identity = form.identity.data.strip()
-
-        # Allow login by username, email, or phone
         user = User.query.filter(
             or_(
                 User.username == identity,
@@ -78,13 +75,11 @@ def login():
             )
         ).first()
 
-        # --- password check (note method name in your model) ---
         if user and user.check_password_hash(form.password.data):
             login_user(user, remember=form.remember_me.data)
-
-            # Redirect to the originally requested page, if present
             flash(f"Login Successful! Welcome, {user.username}!", "success")
-            return redirect(url_for("main.home"))
+            next_page = request.args.get("next")
+            return redirect(next_page or url_for("main.home"))
 
         flash("Login unsuccessful. Please check your credentials.", "danger")
 
