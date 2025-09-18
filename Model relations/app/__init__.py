@@ -8,7 +8,11 @@ from .models import User
 load_dotenv()
 
 def create_app():
-  app = Flask(__name__)
+  app = Flask(__name__, static_folder='static')
+  # Enable fast iteration in development: auto-reload templates and disable static caching
+  app.config['TEMPLATES_AUTO_RELOAD'] = True
+  app.jinja_env.auto_reload = True
+  app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
   
   SECRET_KEY = os.getenv('SECRET_KEY')
   DATABASE_URI = os.getenv('DATABASE_URI')

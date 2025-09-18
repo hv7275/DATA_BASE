@@ -5,6 +5,7 @@ from ..forms import RegistrationForm, LoginForm
 from flask_login import login_user, current_user, logout_user
 from sqlalchemy import or_
 
+
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/register', methods=["GET", 'POST'])
