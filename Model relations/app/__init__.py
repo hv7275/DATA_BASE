@@ -1,8 +1,8 @@
 import os
 from flask import Flask
-from .extensions import db, csrf, migrate, login_manager, admin
-from dotenv import load_dotenv  
-from .models import User
+from .extensions import db, csrf, migrate, login_manager
+from dotenv import load_dotenv
+from flask_admin import Admin
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -28,8 +28,19 @@ def create_app():
   migrate.init_app(app, db)
   login_manager.init_app(app)
   login_manager.login_view = 'auth.login'
-  admin.init_app(app)
   
+  # Import the necessary classes and models
+  
+  from .admin_views import UserAdmin, OrderAdmin 
+  from .models import User, Order
+  
+  # Create the Admin instance
+  admin = Admin(app, 'My App Admin', template_mode='bootstrap4')
+  
+  
+  # Add the secured model views to the admin panel
+  admin.add_view(UserAdmin(User, db.session))
+  admin.add_view(OrderAdmin(Order, db.session))
   
   # user loader 
   @login_manager.user_loader

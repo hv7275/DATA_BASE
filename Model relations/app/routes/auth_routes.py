@@ -76,7 +76,7 @@ def login():
             )
         ).first()
 
-        if user and user.check_password_hash(form.password.data):
+        if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             flash(f"Login Successful! Welcome, {user.username}!", "success")
             next_page = request.args.get("next")

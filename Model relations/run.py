@@ -1,7 +1,9 @@
 from app import create_app
-from app.extensions import db
 
 app = create_app() 
+
+import sys
+print(f"--- Running with Python from: {sys.executable} ---")
 
 
 if __name__ == ('__main__'):
